@@ -11,8 +11,7 @@
         Loaded="Window_Loaded"
         Title="{Binding Title, Mode=OneWay}"
         WindowStyle="ToolWindow"
-        Icon="K4AdotNet.ico"
-        d:DataContext="{d:DesignInstance local:TrackerModel, IsDesignTimeCreatable=True}">
+        Icon="K4AdotNet.ico">
     <Window.Resources>
         <Style x:Key="Header" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -60,6 +59,7 @@
                     LargeChange="16" SmallChange="8"
                     TickFrequency="16"
                     Value="{Binding DepthNonBodyPixelsAlpha}"/>
+            <Button Content="Export data" Margin="220,0,180,0" x:Name="ExportData" Click="ExportData_Click"/>
         </StackPanel>
         <!-- COLOR -->
         <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Header}">

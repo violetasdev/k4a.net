@@ -247,4 +247,14 @@ namespace K4AdotNet.BodyTracking
 
         #endregion
     }
+
+    public class BodyImport
+    {
+        public string ID_exp { get; set; }
+        public float heightDevice { get; set; }
+        public int ID_body { get; set; }
+        public TimeSpan timeBody { get; set; }
+        public IDictionary<string, List<float>> ListJoints { get; set; }
+    }
+
 }

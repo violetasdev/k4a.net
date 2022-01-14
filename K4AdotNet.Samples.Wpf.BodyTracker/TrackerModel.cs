@@ -4,6 +4,11 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Collections.Generic;
+
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace K4AdotNet.Samples.Wpf.BodyTracker
 {
@@ -23,6 +28,8 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
         private readonly BodyIndexMapTransformation bodyIndexMapTransformation;
 
         private readonly ActualFpsCalculator actualFps = new ActualFpsCalculator();
+
+        private int status_json=0;
 
         // For designer
         public TrackerModel()
@@ -94,8 +101,10 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             if (actualFps.RegisterFrame())
                 RaisePropertyChanged(nameof(ActualFps));
 
-            depthSkeletonVisualizer?.Update(e.BodyFrame);
-            colorSkeletonVisualizer?.Update(e.BodyFrame);
+
+            bodyDataProcessed.Add(depthSkeletonVisualizer?.Update(e.BodyFrame, status_json));
+
+            colorSkeletonVisualizer?.Update(e.BodyFrame, status_json);
 
             using (var capture = e.BodyFrame.Capture)
             {
@@ -119,8 +128,28 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                     }
                 }
             }
+            if (status_json == 1)
+            {
+                ImportJSON(bodyDataProcessed);
+            }
         }
 
+        public List<BodyImport> bodyDataProcessed = new List<BodyImport>();
+
+        public void ImportJSON(List<BodyImport> dataProcessed)
+        {
+
+            Console.WriteLine("Json crear");
+            string data_json = JsonConvert.SerializeObject(dataProcessed);
+
+            string path = Path.Combine("test.json");
+
+            using (StreamWriter writer = new StreamWriter(path))
+            {
+                writer.Write(data_json);
+            }
+
+        }
         public void Dispose()
         {
             if (readingLoop != null)
@@ -139,6 +168,13 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
 
             bodyIndexMapTransformation?.Dispose();
         }
+
+        public void Import()
+        {
+            status_json = status_json+1;
+            Console.WriteLine("Estatus Iniciado");
+        }
+
 
         public void Run()
             => readingLoop?.Run();

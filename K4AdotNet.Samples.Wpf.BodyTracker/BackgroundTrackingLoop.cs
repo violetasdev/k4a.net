@@ -44,6 +44,8 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                     backgroundThread.Join();
             }
 
+
+
             tracker.Dispose();
         }
 

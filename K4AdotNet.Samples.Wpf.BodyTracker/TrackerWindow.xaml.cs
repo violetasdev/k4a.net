@@ -25,5 +25,10 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             (DataContext as TrackerModel)?.Dispose();
             base.OnClosed(e);
         }
+
+        private void ExportData_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as TrackerModel)?.Import();
+        }
     }
 }

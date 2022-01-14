@@ -171,6 +171,7 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 { BodyTracking.SensorOrientation.Flip180, "Upside-down" },
             }.ToList();
 
+
         #endregion
     }
 }

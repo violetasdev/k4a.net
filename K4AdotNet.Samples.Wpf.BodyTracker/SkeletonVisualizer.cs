@@ -1,9 +1,13 @@
 ﻿using K4AdotNet.BodyTracking;
 using System;
+
+
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Collections.Generic;
+
 
 namespace K4AdotNet.Samples.Wpf.BodyTracker
 {
@@ -61,11 +65,11 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
 
         #endregion
 
-        public void Update(BodyFrame bodyFrame)
+        public BodyImport Update(BodyFrame bodyFrame, int status)
         {
             // Is compatible?
             if (bodyFrame == null || bodyFrame.IsDisposed)
-                return;
+                return null;
 
             // 1st step: get information about bodies
             lock (skeletonsSync)
@@ -73,33 +77,99 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 var bodyCount = bodyFrame.BodyCount;
                 if (skeletons.Length != bodyCount)
                     skeletons = new Skeleton[bodyCount];
+                    status_json = status;
                 for (var i = 0; i < bodyCount; i++)
+                {
                     bodyFrame.GetBodySkeleton(i, out skeletons[i]);
+                }
             }
 
             // 2nd step: we can update ImageSource only from its owner thread (as a rule, UI thread)
             dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(DrawBodies));
+
+            return skeleton_joints;
         }
 
         private void DrawBodies()
         {
+           
             lock (skeletonsSync)
             {
                 using (var dc = drawingGroup.Open())
                 {
+                    
                     // Our image must fit depth map, this why we have to draw transparent rectangle to set size of our image
                     // There is no other way to set size of DrawingImage
                     dc.DrawRectangle(Brushes.Transparent, null, drawingRect);
 
                     // Draw skeleton for each tracked body
-                    foreach (var skeleton in skeletons)
+                    ////foreach (var skeleton in skeletons)
+                    ////{
+                    ////    DrawBones(dc, skeleton);
+                    ////    DrawJoints(dc, skeleton);
+
+                    ////    //  Import data to .JSON
+                    ////    ImportJSON(skeleton);
+                    ////}
+
+                    
+                    bodyDataProcessed = new List<BodyImport>();
+
+                    for (var i = 0; i < skeletons.Length; i++)
                     {
-                        DrawBones(dc, skeleton);
-                        DrawJoints(dc, skeleton);
+                        DrawBones(dc, skeletons[i]);
+                        DrawJoints(dc, skeletons[i]);
+                        skeleton_joints = createDataList(skeletons[i], i);
+                        //bodyDataProcessed.Add(skeleton_joints);
                     }
                 }
             }
         }
+
+        private BodyImport createDataList(Skeleton skeleton, int id_skeleton) {
+
+                IDictionary<string, List<float>> body_joints = new Dictionary<string, List<float>>();
+                var BodyToImport = new BodyImport();
+
+                foreach (var jointType in JointTypes.All)
+                {
+                    List<float> joints_coordinates = new List<float>();
+                    var joint = skeleton[jointType];
+                    //Console.WriteLine(DateTimeOffset.Now.TimeOfDay);
+
+                    //Get current time
+                    // Evaluate 200 ms per sample
+
+                    //Create Joints object
+                    //Console.WriteLine(jointType + "=" + joint.PositionMm.X / 1000 + "," + joint.PositionMm.Y / 1000 + "," + joint.PositionMm.Z / 1000);
+
+                    joints_coordinates.Add(joint.PositionMm.X / 1000);
+                    joints_coordinates.Add(joint.PositionMm.Y / 1000);
+                    joints_coordinates.Add(joint.PositionMm.Z / 1000);
+
+                    //adding a key/value using the Add() method
+                    body_joints.Add(jointType.ToString(), joints_coordinates);
+
+                // Metadata: id_experiment, height_device, id_body, time_body, joints
+
+                BodyToImport.ID_exp = "789";
+                BodyToImport.heightDevice = 183;
+                BodyToImport.ID_body = id_skeleton;
+                BodyToImport.timeBody = DateTimeOffset.Now.TimeOfDay;
+                BodyToImport.ListJoints = body_joints;
+
+                }
+
+                //foreach (KeyValuePair<string, List<float>> kvp in body_joints) {
+                //    Console.WriteLine("Key: {0}", kvp.Key);
+                //    kvp.Value.ForEach(num => Console.WriteLine(num + ", "));
+                //}
+
+                return BodyToImport;
+        }
+
+
+
 
         // Draws bone as line (stick) between two joints
         private void DrawBones(DrawingContext dc, Skeleton skeleton)
@@ -132,6 +202,7 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             foreach (var jointType in JointTypes.All)
             {
                 var joint = skeleton[jointType];
+                
                 var point2D = ProjectJointToImage(joint);
                 if (point2D.HasValue)
                 {
@@ -160,6 +231,9 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
         private readonly Rect drawingRect;
         private readonly DrawingGroup drawingGroup;
         private Skeleton[] skeletons = new Skeleton[0];
+        private List<BodyImport> bodyDataProcessed=new List<BodyImport>();
+        private int status_json;
         private readonly object skeletonsSync = new object();
+        private BodyImport skeleton_joints;
     }
 }
