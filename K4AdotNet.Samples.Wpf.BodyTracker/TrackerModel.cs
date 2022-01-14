@@ -7,7 +7,6 @@ using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 
 using System.IO;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace K4AdotNet.Samples.Wpf.BodyTracker
@@ -31,6 +30,8 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
 
         private int status_json=0;
 
+
+
         // For designer
         public TrackerModel()
             : base()
@@ -43,6 +44,7 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             TrackerProcessingMode processingMode, DnnModel dnnModel, SensorOrientation sensorOrientation, float smoothingFactor)
             : base(app)
         {
+
             // try to create tracking loop first
             readingLoop.GetCalibration(out calibration);
             trackingLoop = new BackgroundTrackingLoop(in calibration, processingMode, dnnModel, sensorOrientation, smoothingFactor);
@@ -98,11 +100,19 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
 
         private void TrackingLoop_BodyFrameReady(object sender, BodyFrameReadyEventArgs e)
         {
+
             if (actualFps.RegisterFrame())
                 RaisePropertyChanged(nameof(ActualFps));
 
+            var data = depthSkeletonVisualizer?.Update(e.BodyFrame, status_json);
 
-            bodyDataProcessed.Add(depthSkeletonVisualizer?.Update(e.BodyFrame, status_json));
+            var end_time = DateTime.Now;
+
+            if ((end_time - start_time).TotalMilliseconds> 200) {
+                bodyDataProcessed.Add(data);
+                start_time= DateTime.Now;
+            }
+
 
             colorSkeletonVisualizer?.Update(e.BodyFrame, status_json);
 
@@ -135,6 +145,8 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
         }
 
         public List<BodyImport> bodyDataProcessed = new List<BodyImport>();
+
+        public DateTime start_time=DateTime.Now;
 
         public void ImportJSON(List<BodyImport> dataProcessed)
         {
