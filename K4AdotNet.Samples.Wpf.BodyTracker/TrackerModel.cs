@@ -154,7 +154,9 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             Console.WriteLine("Json crear");
             string data_json = JsonConvert.SerializeObject(dataProcessed);
 
-            string path = Path.Combine("test.json");
+            string exp_name="Azure_" + DateTime.Now.ToString("Y-m-d")+""+ DateTime.Now.ToString("HH-m");
+
+            string path = Path.Combine(exp_name+".json");
 
             using (StreamWriter writer = new StreamWriter(path))
             {

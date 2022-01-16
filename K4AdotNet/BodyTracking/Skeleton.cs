@@ -251,10 +251,10 @@ namespace K4AdotNet.BodyTracking
     public class BodyImport
     {
         public string ID_exp { get; set; }
-        public float heightDevice { get; set; }
-        public int ID_body { get; set; }
-        public TimeSpan timeBody { get; set; }
-        public IDictionary<string, List<float>> ListJoints { get; set; }
+        public float height { get; set; }
+        public int ID_subject { get; set; }
+        public TimeSpan time { get; set; }
+        public IDictionary<string, List<float>> joints { get; set; }
     }
 
 }

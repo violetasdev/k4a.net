@@ -152,11 +152,11 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
 
                 // Metadata: id_experiment, height_device, id_body, time_body, joints
 
-                BodyToImport.ID_exp = "789";
-                BodyToImport.heightDevice = 183;
-                BodyToImport.ID_body = id_skeleton;
-                BodyToImport.timeBody = DateTimeOffset.Now.TimeOfDay;
-                BodyToImport.ListJoints = body_joints;
+                BodyToImport.ID_exp = "Azure_"+ DateTime.Now.ToString("Y-m-d");
+                BodyToImport.height = 183;
+                BodyToImport.ID_subject = id_skeleton;
+                BodyToImport.time = DateTimeOffset.Now.TimeOfDay;
+                BodyToImport.joints = body_joints;
 
                 }
 
