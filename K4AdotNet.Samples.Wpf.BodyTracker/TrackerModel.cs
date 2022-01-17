@@ -100,22 +100,22 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
 
         private void TrackingLoop_BodyFrameReady(object sender, BodyFrameReadyEventArgs e)
         {
-
+            
             if (actualFps.RegisterFrame())
                 RaisePropertyChanged(nameof(ActualFps));
 
             var data = depthSkeletonVisualizer?.Update(e.BodyFrame, status_json);
+            colorSkeletonVisualizer?.Update(e.BodyFrame, status_json);
 
             var end_time = DateTime.Now;
 
-            if ((end_time - start_time).TotalMilliseconds> 200) {
+            if ((end_time - start_time).TotalMilliseconds> 200 && data !=null) {
                 bodyDataProcessed.Add(data);
                 start_time= DateTime.Now;
             }
 
 
-            colorSkeletonVisualizer?.Update(e.BodyFrame, status_json);
-
+            
             using (var capture = e.BodyFrame.Capture)
             {
                 using (var depthImage = capture.DepthImage)
@@ -154,7 +154,7 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             Console.WriteLine("Json crear");
             string data_json = JsonConvert.SerializeObject(dataProcessed);
 
-            string exp_name="Azure_" + DateTime.Now.ToString("Y-m-d")+""+ DateTime.Now.ToString("HH-m");
+            string exp_name="Azure_" + DateTime.Now.ToString("yyyy-MM-dd")+"_"+ DateTime.Now.ToString("HH-mm");
 
             string path = Path.Combine(exp_name+".json");
 
@@ -163,6 +163,7 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 writer.Write(data_json);
             }
 
+            status_json =0;
         }
         public void Dispose()
         {

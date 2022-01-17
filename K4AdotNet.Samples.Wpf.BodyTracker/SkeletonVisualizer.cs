@@ -129,34 +129,49 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
         private BodyImport createDataList(Skeleton skeleton, int id_skeleton) {
 
                 IDictionary<string, List<float>> body_joints = new Dictionary<string, List<float>>();
-                var BodyToImport = new BodyImport();
+                IDictionary<string, List<float>> body_joints_orientations = new Dictionary<string, List<float>>();
+            var BodyToImport = new BodyImport();
 
-                foreach (var jointType in JointTypes.All)
-                {
-                    List<float> joints_coordinates = new List<float>();
-                    var joint = skeleton[jointType];
-                    //Console.WriteLine(DateTimeOffset.Now.TimeOfDay);
+            foreach (var jointType in JointTypes.All)
+            {
+                List<float> joints_coordinates = new List<float>();
+                List<float> joints_orientations = new List<float>();
+                var joint = skeleton[jointType];
+                //Console.WriteLine(DateTimeOffset.Now.TimeOfDay);
 
-                    //Get current time
-                    // Evaluate 200 ms per sample
+                //Get current time
+                // Evaluate 200 ms per sample
 
-                    //Create Joints object
-                    //Console.WriteLine(jointType + "=" + joint.PositionMm.X / 1000 + "," + joint.PositionMm.Y / 1000 + "," + joint.PositionMm.Z / 1000);
+                //Create Joints object
+                //Console.WriteLine(jointType + "=" + joint.PositionMm.X / 1000 + "," + joint.PositionMm.Y / 1000 + "," + joint.PositionMm.Z / 1000);
 
-                    joints_coordinates.Add(joint.PositionMm.X / 1000);
-                    joints_coordinates.Add(joint.PositionMm.Y / 1000);
-                    joints_coordinates.Add(joint.PositionMm.Z / 1000);
+                joints_coordinates.Add(joint.PositionMm.X / 1000 * -1);
+                joints_coordinates.Add(joint.PositionMm.Y / 1000);
+                joints_coordinates.Add(joint.PositionMm.Z / 1000);
 
-                    //adding a key/value using the Add() method
-                    body_joints.Add(jointType.ToString(), joints_coordinates);
+                joints_orientations.Add(joint.Orientation.X);
+                joints_orientations.Add(joint.Orientation.Y);
+                joints_orientations.Add(joint.Orientation.Z);
+                joints_orientations.Add(joint.Orientation.W);
+
+
+
+
+                //adding a key/value using the Add() method
+                body_joints.Add(jointType.ToString(), joints_coordinates);
+                body_joints_orientations.Add(jointType.ToString(), joints_orientations);
 
                 // Metadata: id_experiment, height_device, id_body, time_body, joints
 
-                BodyToImport.ID_exp = "Azure_"+ DateTime.Now.ToString("Y-m-d");
+                BodyToImport.ID_exp = "Azure_"+ DateTime.Now.ToString("yyyy-MM-dd");
+                BodyToImport.date_exp= DateTime.Now.ToString("yyyy-MM-dd");
                 BodyToImport.height = 183;
+                BodyToImport.x =skeleton.SpineNavel.PositionMm.X/1000;
+                BodyToImport.y = skeleton.SpineNavel.PositionMm.Z / 1000;
                 BodyToImport.ID_subject = id_skeleton;
-                BodyToImport.time = DateTimeOffset.Now.TimeOfDay;
+                BodyToImport.time = DateTime.Now.ToString("HH:mm:ss.ffff");
                 BodyToImport.joints = body_joints;
+                BodyToImport.orientations = body_joints_orientations;
 
                 }
 
