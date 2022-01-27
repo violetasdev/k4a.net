@@ -114,8 +114,6 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 start_time= DateTime.Now;
             }
 
-
-            
             using (var capture = e.BodyFrame.Capture)
             {
                 using (var depthImage = capture.DepthImage)

@@ -135,7 +135,6 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
             foreach (var jointType in JointTypes.All)
             {
                 List<float> joints_coordinates = new List<float>();
-                List<float> joints_orientations = new List<float>();
                 var joint = skeleton[jointType];
                 //Console.WriteLine(DateTimeOffset.Now.TimeOfDay);
 
@@ -149,17 +148,8 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 joints_coordinates.Add(joint.PositionMm.Y / 1000);
                 joints_coordinates.Add(joint.PositionMm.Z / 1000);
 
-                joints_orientations.Add(joint.Orientation.X);
-                joints_orientations.Add(joint.Orientation.Y);
-                joints_orientations.Add(joint.Orientation.Z);
-                joints_orientations.Add(joint.Orientation.W);
-
-
-
-
                 //adding a key/value using the Add() method
                 body_joints.Add(jointType.ToString(), joints_coordinates);
-                body_joints_orientations.Add(jointType.ToString(), joints_orientations);
 
                 // Metadata: id_experiment, height_device, id_body, time_body, joints
 
@@ -171,7 +161,6 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 BodyToImport.ID_subject = id_skeleton;
                 BodyToImport.time = DateTime.Now.ToString("HH:mm:ss.ffff");
                 BodyToImport.joints = body_joints;
-                BodyToImport.orientations = body_joints_orientations;
 
                 }
 

@@ -258,7 +258,6 @@ namespace K4AdotNet.BodyTracking
         public int ID_subject { get; set; }
         public string time { get; set; }
         public IDictionary<string, List<float>> joints { get; set; }
-        public IDictionary<string, List<float>> orientations { get; set; }
     }
 
 }
