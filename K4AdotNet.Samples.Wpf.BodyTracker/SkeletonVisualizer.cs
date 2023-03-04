@@ -51,6 +51,8 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
         /// <summary>Visualization setting: brush to fill joint circle.</summary>
         public Brush JointFill { get; set; }
 
+        public int BodyID { get; set; }
+
         /// <summary>Visualization setting: brush to fill joint circle for Low confidence.</summary>
         public Brush JointFillLow { get; set; }
 
@@ -81,6 +83,7 @@ namespace K4AdotNet.Samples.Wpf.BodyTracker
                 for (var i = 0; i < bodyCount; i++)
                 {
                     bodyFrame.GetBodySkeleton(i, out skeletons[i]);
+                    //BodyID=bodyFrame.GetBodyId(i);
                 }
             }
 
